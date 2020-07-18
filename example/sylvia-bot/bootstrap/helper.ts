@@ -15,6 +15,7 @@ export async function require(path: string) {
 }
 
 export async function loadConfig(path: string) {
+    path = `${Deno.cwd()}/config/${path}`;
     let config;
     try {
         config = (await require(path)).default;

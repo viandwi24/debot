@@ -14,8 +14,11 @@ Sylvia.set("bot_name", "Sylvia");
 Sylvia.lang["trigger:notfound"] = "no trigger found.";
 Sylvia.alternative.push("i am listening...");
 
+// middleware
+// Sylvia.addMiddleware("app", )
+
 // 
-let modules = await loadConfig(`${root}/config/module.ts`);
+let modules = await loadConfig(`module.ts`);
 await loadModule(modules, Sylvia);
 
 // 

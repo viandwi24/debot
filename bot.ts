@@ -17,7 +17,7 @@ export class Bot {
     /** alternative */
     public alternative: Array<string> = [];  
 
-    /** languagne */
+    /** language */
     public lang: Record<string,string> = {
         "trigger:notfound": "no trigger found."
     };

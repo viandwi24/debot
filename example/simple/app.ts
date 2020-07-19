@@ -1,5 +1,5 @@
-import { Bot } from "../mod.ts";
-import { StdFlags } from "../deps.ts";
+import { Bot } from "../../mod.ts";
+import { StdFlags } from "../../deps.ts";
 
 const bot = makeBot();
 const parsedArgs: StdFlags.Args = StdFlags.parse(Deno.args);

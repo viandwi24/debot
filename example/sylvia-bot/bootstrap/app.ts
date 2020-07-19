@@ -1,27 +1,26 @@
-import { Bot } from "../deps.ts";
-import { loadConfig, loadModule } from "./helper.ts";
+import { Bot, Container } from "../deps.ts";
+import { LooseObject } from "../../../foundation/container.ts";
 
 // 
 const root = Deno.cwd();
 
 // make bot instance
 const Sylvia = new Bot;
+const app: Container & LooseObject = new Container(Sylvia, { basepath: root, configpath: "config" });
+
+// load configuration file
+await app.configure("module");
+await app.configure("telegram");
 
 // set data
-Sylvia.set("bot_name", "Sylvia");
+app.bot.set("bot_name", "Sylvia");
 
 // set lang and altnative reply
-Sylvia.lang["trigger:notfound"] = "no trigger found.";
-Sylvia.alternative.push("i am listening...");
+app.bot.lang["trigger:notfound"] = "no trigger found.";
+app.bot.alternative.push("i am listening...");
 
-// middleware
-// Sylvia.addMiddleware("app", )
-
-// 
-let modules = await loadConfig(`module.ts`);
-await loadModule(modules, Sylvia);
-
-// 
+// load module
+await app.loadModule(app.config("module"));
 
 // export
-export { Sylvia };
+export { app };

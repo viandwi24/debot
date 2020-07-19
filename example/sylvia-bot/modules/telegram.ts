@@ -1,45 +1,52 @@
-import { Bot } from "../deps.ts";
-import { loadConfig } from "../bootstrap/helper.ts";
+import { Bot, Container } from "../deps.ts";
 import {
     TelegramBot,
     UpdateType,
   } from "https://deno.land/x/telegram_bot_api/mod.ts";
+import { LooseObject } from "../deps.ts";
 
-export async function extend(bot: Bot) {
-    bot.addTask('* * * * * *', async () => {
-        // get state
-        let state = bot.get("telegram_state", false);
+export async function extend(app: Container & LooseObject, bot: Bot) {
+    app.addProvider('telegram-provider', register, boot);
+};
 
-        // if state true dont run
-        if (state) return ;
-
-        // set state to true
-        bot.set("telegram_state", true);
+export async function register(app: Container & LooseObject, bot: Bot) {
 
         // 
-        let config = await loadConfig(`telegram.ts`)
-        let telebot = new TelegramBot(config.API_KEY);
+        let telegrambot = new TelegramBot(app.config("telegram.API_KEY"));
 
         // 
-        await telebot.deleteWebhook();
+        await telegrambot.deleteWebhook();
 
         // 
-        telebot.run({
+        telegrambot.run({
             polling: {
                 timeout: 30,
             },
         });
 
         // 
-        telebot.on(UpdateType.Message, async ({ message }) => {
-            const chatId = message.chat.id;
+        telegrambot.on(UpdateType.Message, async ({ message }) => {
+            const chat_id = message.chat.id;
+
             console.log(
-                `[Telegram] [${message.chat.username}] ${message.text}`
+                `[Telegram] ${message.chat.username} : ${message.text}`
             );
-            if (message.text) bot.send(message.text);
+            if (message.text) {
+                let text = await bot.send(message.text, { telegrambot, message });
+                if (typeof text != "undefined" && text != null) {
+                    if (text == bot.lang["trigger:notfound"]) text = "I do not understand what you mean.";
+                    await telegrambot.sendMessage({
+                        chat_id,
+                        text
+                    });
+                }
+            }
         });
 
         // 
-        console.log("[Telegram] Bot Running.");
-    });
-};
+        app.telegrambot = telegrambot;
+}
+
+export async function boot(app: Container & LooseObject, bot: Bot) {
+    console.log("[Telegram] Bot Running.");
+}

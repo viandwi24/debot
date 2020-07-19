@@ -1,2 +1,3 @@
-// Copyright 2020 the Bot authors. All rights reserved. MIT license.
-export * from "./bot.ts";
+// Copyright 2020 the Debot authors. All rights reserved. MIT license.
+export * from "./foundation/bot.ts";
+export * from "./foundation/container.ts";

@@ -1,4 +1,5 @@
-import { Cron } from "./deps.ts";
+// Copyright 2020 the Debot authors. All rights reserved. MIT license.
+import { Cron } from "./../deps.ts";
 
 type JobType = () => void;
 
@@ -36,10 +37,11 @@ export class Bot {
      * @param {string} input 
      * @returns {string} return reply from bot
      */
-    public async send(input: string): Promise<string> {
+    public async send(input: string, params?: any): Promise<string|null> {
         input = this.makeWordSafe(input);
         input = await this.runMiddleware(input);
-        let result = await this.runTrigger(input);
+        let result = await this.runTrigger(input, params);
+        if (typeof result != "string" && typeof result != "undefined") return null;
         return (typeof result == "undefined")
             ? this.__e("trigger:notfound")
             : result;
@@ -133,11 +135,27 @@ export class Bot {
      * @param  {string} input
      * @returns Promise<any>
      */
-    private async runTrigger(input: string): Promise<any> {
+    private async runTrigger(input: string, params?: any): Promise<any> {
         let trigger = this.trigger.find( (e: ITrigger) => (e.pattern.test(input)) );
         return (typeof trigger == "undefined")
             ? undefined
-            : await trigger.callback(input);
+            : await trigger.callback(input, params);
+    }
+
+    
+    /**
+     * Call trigger
+     * @param  {string} name
+     * @param  {string} input
+     * @param  {any} params?
+     * @returns Promise<undefined|any>
+     */
+    public async callTrigger(name: string, input: string, params?: any) : Promise<undefined|any>
+    {
+        let trigger = this.trigger.find( (e: ITrigger) => (e.name === name) );
+        return (typeof trigger == "undefined")
+            ? undefined
+            : await trigger.callback(input, params);
     }
     
     /**

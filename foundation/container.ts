@@ -52,7 +52,10 @@ export class Container implements LooseObject {
     public async loadModule(modules: string[]) : Promise<void> {
         for(let key in modules) {
             let path = modules[key];
-            if (!await exists(path)) {
+
+            // 
+            let isOnline = (new RegExp('http://|https://')).test(path);
+            if (!isOnline && !await exists(path)) {
                 console.error(`Module "${path}" Not Loaded because not found.`);
                 continue;
             }

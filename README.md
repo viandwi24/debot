@@ -1,6 +1,9 @@
 # Debot
 Debot is a framework to help you build a bot.
 
+![screenshot preview](https://raw.githubusercontent.com/viandwi24/debot/master/ss.png)
+
+
 # Table Of Content
 <!--ts-->
    * [Features](#features)

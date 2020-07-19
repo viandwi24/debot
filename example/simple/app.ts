@@ -20,35 +20,32 @@ function makeBot() {
     let bot = new Bot;
 
     // make alternative reply
-    bot.alternative.push("Aku mendengarmu...");
+    bot.alternative.push("Iam listening...");
 
     // lang
-    bot.lang["trigger:notfound"] = "Aku tidak tahu maksudmu.";
+    bot.lang["trigger:notfound"] = "I dont understand what you mean.";
 
     // data
     bot.set("count", 0);
 
     // add middleware
-    bot.addMiddleware('word-replace', (next: Function, input: string) => {
-        input = input.replace(/ sebuah /g, " ")
-            .replace(/tolong /g, "")
-            .replace(/ tolong/g, "");
+    bot.addMiddleware('safe-word-replace', (next: Function, input: string) => {
+        input = input.replace(/ a /g, " ");
         return next(input);
     });
 
     // add trigger
-    bot.addTrigger("lamp:on", /hidup.*lampu/g, async (input: string) => {
-        return "Lampu dihidupkan";
+    bot.addTrigger("lamp:on", /turn on.*lamp.*/g, async (input: string) => {
+        return "lamp turn on.";
     });
-    bot.addTrigger("lamp:off", /matikan.*lampu/g, async (input: string) => {
-        return "Lampu dimatikan";
+    bot.addTrigger("lamp:off", /turn off.*lamp.*/g, async (input: string) => {
+        return "lamp turn off.";
     });
 
     // add task
     bot.addTask('*/1 * * * * *', () => {
         let count = bot.get("count");
-
-        if (count % 10 == 0) console.log("h3h3");
+        console.log(`Count - ${count}`);
         bot.set("count", count+1);
     });    
 

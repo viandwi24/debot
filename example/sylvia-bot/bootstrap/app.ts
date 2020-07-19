@@ -1,5 +1,4 @@
-import { Bot, Container } from "../deps.ts";
-import { LooseObject } from "../../../foundation/container.ts";
+import { Bot, Container, LooseObject } from "../deps.ts";
 
 // 
 const root = Deno.cwd();

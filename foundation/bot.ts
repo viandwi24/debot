@@ -14,6 +14,11 @@ export interface ITrigger {
     callback: Function;
 }
 
+export interface IMethod {
+    name: string;
+    callback: Function;
+}
+
 export class Bot {
     /** alternative */
     public alternative: Array<string> = [];  
@@ -28,6 +33,9 @@ export class Bot {
 
     /** trigger */
     private trigger: Array<ITrigger> = [];
+
+    /** method */
+    private method: Array<IMethod> = [];
 
     /** storage */
     private data: Record<string,any> = {};
@@ -68,6 +76,16 @@ export class Bot {
     public addTrigger(name: string, pattern: string|RegExp, callback: Function): void {
         if (typeof pattern == "string") pattern = new RegExp(pattern);
         this.trigger.push({ name, pattern, callback } as ITrigger);
+    }
+
+    /**
+     * Add method bot
+     * @param  {string} name
+     * @param  {Function} callback
+     * @returns void
+     */
+    public addMethod(name: string, callback: Function): void {
+        this.method.push({ name, callback } as IMethod);
     }
     
     
@@ -156,6 +174,21 @@ export class Bot {
         return (typeof trigger == "undefined")
             ? undefined
             : await trigger.callback(input, params);
+    }
+
+    
+    /**
+     * Call method
+     * @param  {string} name
+     * @param  {any} ...params
+     * @returns Promise
+     */
+    public async run(name: string, ...params: any) : Promise<undefined|any>
+    {
+        let method = this.method.find( (e: IMethod) => (e.name === name) );
+        return (typeof method == "undefined")
+            ? undefined
+            : await method.callback(...params);
     }
     
     /**

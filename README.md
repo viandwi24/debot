@@ -1,5 +1,5 @@
 # Debot
-Debot is a framework to help you build a bot.
+Debot is a simple framework to help you build a bot.
 
 ![screenshot preview](https://raw.githubusercontent.com/viandwi24/debot/master/ss.png)
 
@@ -11,6 +11,7 @@ Debot is a framework to help you build a bot.
    * [Features](#features)
    * [Simple Example](#simple-example)
    * [Trigger](#trigger)
+   * [Trigger](#method)
    * [Middleware](#middleware)
    * [Task](#task)
    * [Advanced Usage With Simple Framework](#advanced-usage-with-simple-framework)
@@ -73,6 +74,39 @@ bot.addTrigger("lamp:on", /turn on.*lamp.*/g, async (input: string) => {
 let result = await bot.send(input);
 console.log(result);
 ```
+And you can send with param :
+```
+bot.addTrigger("lamp:on", /turn on.*lamp.*/g, async (input: string, params: any) => {
+    let { name } = params;
+    return `Okay ${name}, lamp turn on.`;
+});
+let result = await bot.send(input, { name: 'Alfian Dwi' });
+console.log(result);
+```
+If you don't want to return a value and don't want the bot to return "trigger not found", you can return false :
+```
+bot.addTrigger("my:trigger", /test.*/g, async () => {
+    return false;
+});
+```
+
+You can run trigger without input regex (this trigger disabling middleware) :
+```
+bot.addTrigger("my:trigger", /test.*/g, async (input: string, params: any) => {
+    console.log("trigger called");
+});
+await bot.callTrigger("my:trigger", "custom input", { name: "example params" });
+```
+
+## Method
+Like trigger, method is a function. Can called in everywhere without a input like trigger.
+```
+bot.addMethod("my:method", async (name: string, age: number) {
+    console.log(`Hello ${name}, your age is : ${age}`);
+});
+bot.run("my:method", "Alfian Dwi", 18);
+```
+
 
 ## Middleware
 Middleware can help you filter user input before it is forwarded to the trigger.
